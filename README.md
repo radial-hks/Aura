@@ -29,7 +29,7 @@
 
 ```bash
 # 1. 克隆项目
-git clone https://github.com/aura-ai/aura.git
+git clone https://github.com/radial-hks/aura.git
 cd aura
 
 # 2. 创建虚拟环境
@@ -136,9 +136,9 @@ aura/
 
 ## 📞 联系我们
 
-- 项目主页: [https://github.com/aura-ai/aura](https://github.com/aura-ai/aura)
-- 问题反馈: [Issues](https://github.com/aura-ai/aura/issues)
-- 讨论交流: [Discussions](https://github.com/aura-ai/aura/discussions)
+- 项目主页: [https://github.com/radial-hks/aura](https://github.com/radial-hks/aura)
+- 问题反馈: [Issues](https://github.com/radial-hks/aura/issues)
+- 讨论交流: [Discussions](https://github.com/radial-hks/aura/discussions)
 
 ---
 
