@@ -1,0 +1,301 @@
+# Aura安全配置文件
+# 定义系统安全策略、权限控制和风险管理规则
+
+# 认证配置
+authentication:
+  # JWT配置
+  jwt:
+    algorithm: "HS256"
+    access_token_expire_minutes: 60
+    refresh_token_expire_days: 7
+    issuer: "aura-system"
+    audience: "aura-users"
+  
+  # 密码策略
+  password_policy:
+    min_length: 8
+    max_length: 128
+    require_uppercase: true
+    require_lowercase: true
+    require_numbers: true
+    require_symbols: true
+    forbidden_patterns:
+      - "123456"
+      - "password"
+      - "qwerty"
+      - "admin"
+    history_count: 5  # 不能重复使用最近5个密码
+  
+  # 登录安全
+  login_security:
+    max_attempts: 3
+    lockout_duration_minutes: 30
+    require_2fa: false
+    session_timeout_minutes: 120
+    concurrent_sessions_limit: 3
+
+# 授权配置
+authorization:
+  # 默认权限
+  default_permissions:
+    - "read_public"
+    - "execute_safe_skills"
+  
+  # 权限级别定义
+  permission_levels:
+    guest:
+      description: "访客用户"
+      permissions:
+        - "read_public"
+        - "view_documentation"
+    
+    user:
+      description: "普通用户"
+      permissions:
+        - "read_public"
+        - "read_private"
+        - "execute_safe_skills"
+        - "create_tasks"
+        - "view_own_history"
+    
+    power_user:
+      description: "高级用户"
+      permissions:
+        - "read_public"
+        - "read_private"
+        - "write_public"
+        - "execute_safe_skills"
+        - "execute_advanced_skills"
+        - "create_tasks"
+        - "manage_own_skills"
+        - "view_own_history"
+        - "export_data"
+    
+    admin:
+      description: "管理员"
+      permissions:
+        - "*"  # 所有权限
+  
+  # 资源访问控制
+  resource_access:
+    skills:
+      read: ["user", "power_user", "admin"]
+      execute: ["user", "power_user", "admin"]
+      create: ["power_user", "admin"]
+      update: ["power_user", "admin"]
+      delete: ["admin"]
+    
+    site_models:
+      read: ["user", "power_user", "admin"]
+      create: ["power_user", "admin"]
+      update: ["power_user", "admin"]
+      delete: ["admin"]
+    
+    tasks:
+      read: ["user", "power_user", "admin"]
+      create: ["user", "power_user", "admin"]
+      cancel: ["user", "power_user", "admin"]
+      replay: ["power_user", "admin"]
+
+# 风险管理
+risk_management:
+  # 风险级别阈值
+  risk_thresholds:
+    low: 0.3
+    medium: 0.6
+    high: 0.8
+    critical: 0.95
+  
+  # 风险因子权重
+  risk_factors:
+    domain_reputation: 0.3
+    action_sensitivity: 0.25
+    data_exposure: 0.2
+    user_behavior: 0.15
+    time_context: 0.1
+  
+  # 自动阻止规则
+  auto_block:
+    enabled: true
+    critical_risk_threshold: 0.9
+    suspicious_domains:
+      - "*.malware-site.com"
+      - "phishing-*.net"
+      - "suspicious-domain.org"
+    
+    dangerous_actions:
+      - "delete_all_files"
+      - "format_drive"
+      - "modify_system_registry"
+      - "install_software"
+    
+    sensitive_data_patterns:
+      - "credit_card_number"
+      - "social_security_number"
+      - "bank_account"
+      - "password_field"
+
+# 数据保护
+data_protection:
+  # 敏感数据识别
+  sensitive_patterns:
+    credit_card:
+      pattern: "\\b(?:\\d{4}[- ]?){3}\\d{4}\\b"
+      description: "信用卡号"
+    
+    ssn:
+      pattern: "\\b\\d{3}-\\d{2}-\\d{4}\\b"
+      description: "社会安全号"
+    
+    phone:
+      pattern: "\\b\\d{3}-\\d{3}-\\d{4}\\b"
+      description: "电话号码"
+    
+    email:
+      pattern: "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+[.][A-Za-z]{2,}"
+      description: "邮箱地址"
+  
+  # 数据处理规则
+  processing_rules:
+    log_retention_days: 90
+    audit_retention_days: 365
+    screenshot_retention_days: 30
+    video_retention_days: 7
+    
+    # 数据匿名化
+    anonymization:
+      enabled: true
+      hash_sensitive_data: true
+      mask_patterns:
+        credit_card: "****-****-****-{last4}"
+        ssn: "***-**-{last4}"
+        phone: "***-***-{last4}"
+  
+  # 数据导出限制
+  export_restrictions:
+    max_records_per_export: 10000
+    allowed_formats: ["json", "csv", "txt"]
+    require_approval: true
+    approval_timeout_hours: 24
+
+# 网络安全
+network_security:
+  # CORS配置
+  cors:
+    allow_origins:
+      - "https://aura.yourdomain.com"
+      - "https://app.aura.yourdomain.com"
+    allow_methods: ["GET", "POST", "PUT", "DELETE"]
+    allow_headers: ["Authorization", "Content-Type", "X-Requested-With"]
+    allow_credentials: true
+    max_age: 3600
+  
+  # 速率限制
+  rate_limiting:
+    enabled: true
+    default_limit: "100/minute"
+    
+    endpoint_limits:
+      "/api/auth/login": "5/minute"
+      "/api/tasks/create": "10/minute"
+      "/api/skills/execute": "20/minute"
+      "/api/export/*": "1/hour"
+  
+  # IP白名单/黑名单
+  ip_filtering:
+    enabled: false
+    whitelist: []
+    blacklist:
+      - "192.168.1.100"  # 示例恶意IP
+  
+  # SSL/TLS配置
+  tls:
+    min_version: "1.2"
+    cipher_suites:
+      - "ECDHE-RSA-AES256-GCM-SHA384"
+      - "ECDHE-RSA-AES128-GCM-SHA256"
+      - "ECDHE-RSA-AES256-SHA384"
+      - "ECDHE-RSA-AES128-SHA256"
+
+# 审计配置
+auditing:
+  enabled: true
+  
+  # 审计事件类型
+  audit_events:
+    authentication:
+      - "login_success"
+      - "login_failure"
+      - "logout"
+      - "password_change"
+      - "account_locked"
+    
+    authorization:
+      - "permission_granted"
+      - "permission_denied"
+      - "role_changed"
+    
+    data_access:
+      - "data_read"
+      - "data_write"
+      - "data_delete"
+      - "data_export"
+    
+    system_operations:
+      - "skill_executed"
+      - "task_created"
+      - "task_completed"
+      - "configuration_changed"
+  
+  # 审计日志格式
+  log_format:
+    timestamp: "iso8601"
+    include_user_agent: true
+    include_ip_address: true
+    include_session_id: true
+    include_request_id: true
+  
+  # 审计告警
+  alerts:
+    enabled: true
+    
+    alert_rules:
+      multiple_failed_logins:
+        condition: "failed_login_count > 5 in 10 minutes"
+        severity: "high"
+        action: "notify_admin"
+      
+      privilege_escalation:
+        condition: "role_changed to admin"
+        severity: "critical"
+        action: "immediate_notification"
+      
+      bulk_data_access:
+        condition: "data_read_count > 1000 in 1 hour"
+        severity: "medium"
+        action: "log_and_monitor"
+
+# 合规性配置
+compliance:
+  # GDPR合规
+  gdpr:
+    enabled: true
+    data_retention_policy: "explicit_consent"
+    right_to_be_forgotten: true
+    data_portability: true
+    privacy_by_design: true
+  
+  # SOC2合规
+  soc2:
+    enabled: false
+    security_controls:
+      - "access_control"
+      - "system_monitoring"
+      - "data_encryption"
+      - "incident_response"
+  
+  # 行业特定合规
+  industry_compliance:
+    healthcare: false  # HIPAA
+    finance: false     # PCI-DSS
+    government: false  # FedRAMP

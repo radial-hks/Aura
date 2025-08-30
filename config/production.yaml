@@ -1,0 +1,198 @@
+# Aura生产环境配置
+# 此文件覆盖settings.py中的默认配置
+
+# 数据库配置
+database:
+  type: postgresql
+  host: "${DATABASE_HOST:localhost}"
+  port: 5432
+  database: "${DATABASE_NAME:aura_prod}"
+  username: "${DATABASE_USER:aura}"
+  password: "${DATABASE_PASSWORD}"
+  pool_size: 20
+  max_overflow: 30
+  pool_timeout: 30
+  pool_recycle: 3600
+  echo: false
+
+# Redis配置
+redis:
+  host: "${REDIS_HOST:localhost}"
+  port: 6379
+  database: 0
+  password: "${REDIS_PASSWORD}"
+  max_connections: 50
+  socket_timeout: 5
+  socket_connect_timeout: 5
+
+# Playwright配置
+playwright:
+  headless: true
+  slow_mo: 0
+  timeout: 30000
+  navigation_timeout: 30000
+  record_video: false
+  record_har: false
+  trace: false
+  max_concurrent_browsers: 10
+  browser_pool_size: 20
+  page_pool_size: 50
+
+# LLM配置
+llm:
+  provider: "openai"
+  model: "${LLM_MODEL:gpt-4}"
+  api_key: "${OPENAI_API_KEY}"
+  api_base: "${OPENAI_API_BASE}"
+  max_tokens: 4000
+  temperature: 0.7
+  timeout: 60
+  max_retries: 3
+  retry_delay: 2.0
+  rate_limit_rpm: 60
+  rate_limit_tpm: 90000
+
+# 安全配置
+security:
+  secret_key: "${SECRET_KEY}"
+  jwt_algorithm: "HS256"
+  jwt_expiration: 3600
+  password_min_length: 12
+  password_require_uppercase: true
+  password_require_lowercase: true
+  password_require_numbers: true
+  password_require_symbols: true
+  max_login_attempts: 3
+  lockout_duration: 1800  # 30分钟
+  session_timeout: 1800
+  csrf_protection: true
+  cors_origins:
+    - "https://aura.yourdomain.com"
+  allowed_hosts:
+    - "aura.yourdomain.com"
+    - "api.aura.yourdomain.com"
+  rate_limit_per_minute: 100
+  enable_audit_log: true
+
+# 日志配置
+logging:
+  level: INFO
+  console_enabled: false
+  file_enabled: true
+  file_path: "/var/log/aura/aura.log"
+  file_max_size: 50485760  # 50MB
+  file_backup_count: 10
+  json_format: true
+  include_trace: false
+  log_sql: false
+  log_requests: true
+  log_responses: false
+  sensitive_fields:
+    - "password"
+    - "token"
+    - "api_key"
+    - "secret"
+    - "credit_card"
+    - "ssn"
+    - "phone"
+
+# 缓存配置
+cache:
+  enabled: true
+  backend: "redis"
+  default_timeout: 300
+  key_prefix: "aura:prod:"
+  version: 1
+  site_model_ttl: 86400
+  skill_cache_ttl: 3600
+  session_cache_ttl: 1800
+  compression_enabled: true
+  compression_level: 6
+
+# 监控配置
+monitoring:
+  enabled: true
+  metrics_enabled: true
+  tracing_enabled: true
+  health_check_enabled: true
+  prometheus_enabled: true
+  prometheus_port: 9090
+  jaeger_enabled: true
+  jaeger_endpoint: "${JAEGER_ENDPOINT:http://localhost:14268/api/traces}"
+  sentry_enabled: true
+  sentry_dsn: "${SENTRY_DSN}"
+  alert_webhook: "${ALERT_WEBHOOK}"
+  performance_threshold_ms: 3000
+  error_rate_threshold: 0.01
+  memory_threshold_mb: 2048
+
+# 技能库配置
+skill_library:
+  enabled: true
+  registry_url: "https://skills.aura.ai"
+  local_path: "/opt/aura/skills"
+  auto_update: true
+  update_interval: 3600
+  signature_verification: true
+  trusted_publishers:
+    - "official"
+    - "verified"
+  max_skill_size: 10485760  # 10MB
+  execution_timeout: 300
+  sandbox_enabled: true
+  allowed_permissions:
+    - "readPublic"
+  version_retention: 3
+
+# 站点探索配置
+site_explorer:
+  enabled: true
+  max_depth: 3
+  max_pages_per_domain: 100
+  crawl_delay: 2.0
+  respect_robots_txt: true
+  timeout: 30
+  max_concurrent_requests: 5
+  screenshot_enabled: true
+  screenshot_quality: 60
+  element_detection_enabled: true
+  semantic_analysis_enabled: true
+  model_update_threshold: 0.3
+  model_retention_days: 30
+
+# 策略引擎配置
+policy_engine:
+  enabled: true
+  strict_mode: true
+  default_permission_level: "read"
+  require_approval_for_write: true
+  require_approval_for_sensitive: true
+  approval_timeout: 300
+  policy_cache_ttl: 3600
+  audit_all_actions: true
+  block_suspicious_domains: true
+  suspicious_domains:
+    - "malicious-site.com"
+    - "phishing-example.net"
+  allowed_file_extensions:
+    - ".txt"
+    - ".csv"
+    - ".json"
+    - ".xml"
+    - ".pdf"
+
+# API配置
+api:
+  host: "0.0.0.0"
+  port: 8000
+  debug: false
+  reload: false
+  workers: 4
+  max_request_size: 16777216  # 16MB
+  request_timeout: 300
+  keepalive_timeout: 5
+  cors_enabled: true
+  docs_enabled: false  # 生产环境禁用文档
+  rate_limiting_enabled: true
+  rate_limit_requests: 100
+  rate_limit_window: 60

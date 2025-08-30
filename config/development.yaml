@@ -1,0 +1,105 @@
+# Aura开发环境配置
+# 此文件覆盖settings.py中的默认配置
+
+# 数据库配置
+database:
+  type: sqlite
+  database: "data/aura_dev.db"
+  echo: true  # 开发环境显示SQL语句
+
+# Redis配置（开发环境可选）
+redis:
+  host: localhost
+  port: 6379
+  database: 1  # 使用不同的数据库避免冲突
+
+# Playwright配置
+playwright:
+  headless: false  # 开发环境显示浏览器
+  slow_mo: 100     # 慢速执行便于调试
+  timeout: 60000   # 更长的超时时间
+  record_video: true
+  trace: true
+  max_concurrent_browsers: 2
+
+# LLM配置
+llm:
+  model: "gpt-3.5-turbo"  # 开发环境使用更便宜的模型
+  max_tokens: 2000
+  temperature: 0.3
+  timeout: 30
+  max_retries: 2
+
+# 安全配置
+security:
+  secret_key: "dev-secret-key-not-for-production"
+  jwt_expiration: 7200  # 2小时
+  max_login_attempts: 10
+  lockout_duration: 300  # 5分钟
+  cors_origins:
+    - "http://localhost:3000"
+    - "http://localhost:8080"
+    - "http://127.0.0.1:3000"
+  rate_limit_per_minute: 1000  # 开发环境更宽松的限制
+
+# 日志配置
+logging:
+  level: DEBUG
+  console_enabled: true
+  file_enabled: true
+  file_path: "logs/aura_dev.log"
+  json_format: false
+  include_trace: true
+  log_sql: true
+  log_requests: true
+  log_responses: true
+
+# 缓存配置
+cache:
+  enabled: false  # 开发环境禁用缓存便于调试
+  backend: "memory"
+  default_timeout: 60
+
+# 监控配置
+monitoring:
+  enabled: false  # 开发环境禁用监控
+  metrics_enabled: false
+  tracing_enabled: false
+  health_check_enabled: true
+
+# 技能库配置
+skill_library:
+  local_path: "skills"
+  auto_update: false  # 开发环境手动更新
+  signature_verification: false  # 开发环境跳过签名验证
+  execution_timeout: 600  # 10分钟，便于调试
+  sandbox_enabled: false
+
+# 站点探索配置
+site_explorer:
+  max_depth: 2
+  max_pages_per_domain: 20
+  crawl_delay: 0.5
+  timeout: 15
+  max_concurrent_requests: 2
+  screenshot_enabled: true
+  model_retention_days: 7
+
+# 策略引擎配置
+policy_engine:
+  strict_mode: false  # 开发环境宽松模式
+  require_approval_for_write: false
+  require_approval_for_sensitive: false
+  approval_timeout: 60
+  audit_all_actions: true
+  block_suspicious_domains: false
+
+# API配置
+api:
+  host: "127.0.0.1"
+  port: 8000
+  debug: true
+  reload: true
+  workers: 1
+  docs_enabled: true
+  rate_limiting_enabled: false  # 开发环境禁用限流

@@ -1,0 +1,73 @@
+2025-08-30 21:42:36 - src.core.orchestrator - ERROR - Task execution failed: 80750ac9-e3ac-4c4e-9a20-ae3b7702c74c, error: 'CommandParser' object has no attribute 'parse'
+2025-08-30 21:42:36 - src.core.orchestrator - ERROR - Task execution failed: 53755ea4-8a46-4874-9965-3e204bc33c71, error: 'CommandParser' object has no attribute 'parse'
+2025-08-30 21:42:36 - src.core.orchestrator - ERROR - Task execution failed: 40dfca92-451b-40cb-9c4c-fdad0d1db824, error: 'CommandParser' object has no attribute 'parse'
+2025-08-30 21:42:36 - src.core.orchestrator - ERROR - Task execution failed: b95b6f9c-1639-4465-a201-41e656a38b77, error: 'CommandParser' object has no attribute 'parse'
+2025-08-30 21:42:36 - src.core.orchestrator - ERROR - Task execution failed: a07683c2-c0c6-4cb9-aee3-085f186e9ff0, error: 'CommandParser' object has no attribute 'parse'
+2025-08-30 21:42:36 - src.core.orchestrator - ERROR - Task execution failed: 1f574c45-c7b8-4083-be07-456f7998a9e0, error: 'CommandParser' object has no attribute 'parse'
+2025-08-30 21:42:36 - src.core.orchestrator - ERROR - Task execution failed: 703de088-eee7-4819-89f4-6917436a6ef2, error: 'CommandParser' object has no attribute 'parse'
+2025-08-30 21:42:36 - src.core.orchestrator - ERROR - Task execution failed: 6d61a967-5442-4b3d-ab38-43b28150ca7f, error: 'CommandParser' object has no attribute 'parse'
+2025-08-30 21:42:36 - src.core.orchestrator - ERROR - Task execution failed: 0a845efc-3351-49c7-8930-d623c9eabb53, error: 'CommandParser' object has no attribute 'parse'
+2025-08-30 21:42:36 - src.core.orchestrator - ERROR - Task execution failed: 3fdce25f-777e-4bc0-bf08-14b78dbfbdd4, error: 'CommandParser' object has no attribute 'parse'
+2025-08-30 21:42:36 - src.core.orchestrator - ERROR - Task execution failed: 89b3bd94-bd40-47ce-b574-5f6050af63c8, error: 'CommandParser' object has no attribute 'parse'
+2025-08-30 21:42:36 - src.core.orchestrator - ERROR - Task execution failed: 32d25d5c-0a8f-47ac-8c7d-80a78d73cf62, error: 'CommandParser' object has no attribute 'parse'
+2025-08-30 21:42:36 - src.core.orchestrator - ERROR - Task execution failed: e68a6388-73ba-4270-9320-ff302c1c0624, error: 'CommandParser' object has no attribute 'parse'
+2025-08-30 21:43:59 - src.core.orchestrator - ERROR - Task execution failed: 9cd9518a-d4bf-41f5-ab46-b281d373bafb, error: 'CommandParser' object has no attribute 'parse'
+2025-08-30 21:44:08 - src.core.orchestrator - ERROR - Task execution failed: 26fdfd6f-6716-4945-838c-4d80c49e8a83, error: 'CommandParser' object has no attribute 'parse'
+2025-08-30 21:44:08 - src.core.orchestrator - ERROR - Task execution failed: 55721f9f-8487-491e-a71b-dbc0a2a6a7a0, error: 'CommandParser' object has no attribute 'parse'
+2025-08-30 21:44:08 - src.core.orchestrator - ERROR - Task execution failed: 566265e9-d02d-45e9-8e54-f186d4cd7085, error: 'CommandParser' object has no attribute 'parse'
+2025-08-30 21:44:08 - src.core.orchestrator - ERROR - Task execution failed: 128e5976-8fb1-41a8-99a3-3b7eac816df7, error: 'CommandParser' object has no attribute 'parse'
+2025-08-30 21:44:08 - src.core.orchestrator - ERROR - Task execution failed: bd078f84-dfdd-4b03-b41b-bd996447c467, error: 'CommandParser' object has no attribute 'parse'
+2025-08-30 21:44:08 - src.core.orchestrator - ERROR - Task execution failed: f7dd44d4-de38-409c-9510-660ec6d36242, error: 'CommandParser' object has no attribute 'parse'
+2025-08-30 21:44:08 - src.core.orchestrator - ERROR - Task execution failed: 73594be9-bea3-4e12-a98b-2867ee8e9231, error: 'CommandParser' object has no attribute 'parse'
+2025-08-30 21:44:08 - src.core.orchestrator - ERROR - Task execution failed: f4f0546f-8f4b-417e-ad8c-8f2071cc5bf4, error: 'CommandParser' object has no attribute 'parse'
+2025-08-30 21:44:08 - src.core.orchestrator - ERROR - Task execution failed: eae2f401-16cf-49b6-99d2-cfda73e87cbc, error: 'CommandParser' object has no attribute 'parse'
+2025-08-30 21:44:08 - src.core.orchestrator - ERROR - Task execution failed: d39773e7-d0de-4546-bf17-f666f5f4ebba, error: 'CommandParser' object has no attribute 'parse'
+2025-08-30 21:44:08 - src.core.orchestrator - ERROR - Task execution failed: ad346bf0-def8-4158-8abe-466618a8f468, error: 'CommandParser' object has no attribute 'parse'
+2025-08-30 21:44:08 - src.core.orchestrator - ERROR - Task execution failed: 1625742f-ad43-4df9-bc9b-980073aa55cb, error: 'CommandParser' object has no attribute 'parse'
+2025-08-30 21:44:08 - src.core.orchestrator - ERROR - Task execution failed: af8771f3-60f8-4084-b64a-95a6d4d68e65, error: 'CommandParser' object has no attribute 'parse'
+2025-08-30 21:44:37 - src.core.orchestrator - ERROR - Task execution failed: 13707f23-36b0-430e-8b4b-a1fc1251f29a, error: 'CommandParser' object has no attribute 'parse'
+2025-08-30 21:44:37 - src.core.orchestrator - ERROR - Task execution failed: 9c043145-b669-4c5b-a112-ff7845a37db2, error: 'CommandParser' object has no attribute 'parse'
+2025-08-30 21:44:37 - src.core.orchestrator - ERROR - Task execution failed: 22f99180-f04f-462b-87e1-ef0150405dda, error: 'CommandParser' object has no attribute 'parse'
+2025-08-30 21:44:37 - src.core.orchestrator - ERROR - Task execution failed: a47e2c32-a850-421c-9e48-0154c7d8f27c, error: 'CommandParser' object has no attribute 'parse'
+2025-08-30 21:44:37 - src.core.orchestrator - ERROR - Task execution failed: 677bf216-d5cd-4915-a0d5-09cd99d50c9f, error: 'CommandParser' object has no attribute 'parse'
+2025-08-30 21:44:37 - src.core.orchestrator - ERROR - Task execution failed: a4605d00-99f4-451a-9647-453ddbaff427, error: 'CommandParser' object has no attribute 'parse'
+2025-08-30 21:44:37 - src.core.orchestrator - ERROR - Task execution failed: c0fae2db-95e1-4498-bafa-1cf59c79ef68, error: 'CommandParser' object has no attribute 'parse'
+2025-08-30 21:44:37 - src.core.orchestrator - ERROR - Task execution failed: 8a89ec55-4d15-4b4c-bc8c-813970353112, error: 'CommandParser' object has no attribute 'parse'
+2025-08-30 21:44:37 - src.core.orchestrator - ERROR - Task execution failed: 6714a2f8-4cd4-4416-aa24-24867521a04d, error: 'CommandParser' object has no attribute 'parse'
+2025-08-30 21:44:37 - src.core.orchestrator - ERROR - Task execution failed: 64bd92f7-647d-47e7-88a8-3c438412f36c, error: 'CommandParser' object has no attribute 'parse'
+2025-08-30 21:44:37 - src.core.orchestrator - ERROR - Task execution failed: 6a1c4224-66cb-4285-bd90-c7b2d5a2a229, error: 'CommandParser' object has no attribute 'parse'
+2025-08-30 21:44:37 - src.core.orchestrator - ERROR - Task execution failed: d5866f99-ceed-4548-a05c-47349c74b8e5, error: 'CommandParser' object has no attribute 'parse'
+2025-08-30 21:44:37 - src.core.orchestrator - ERROR - Task execution failed: aa9471f3-5e39-4158-b4bf-27c239753f8c, error: 'CommandParser' object has no attribute 'parse'
+2025-08-30 21:45:29 - src.core.orchestrator - ERROR - Task execution failed: 7685e179-76c6-4cf2-ae0d-fcbec1eab31f, error: [TASK_EXECUTION_ERROR] Policy violation: No matching policy rule found, default deny
+2025-08-30 21:45:29 - src.core.orchestrator - ERROR - Task execution failed: a0e85162-4bee-45e0-9248-f6d9f242b3d1, error: [TASK_EXECUTION_ERROR] Policy violation: No matching policy rule found, default deny
+2025-08-30 21:45:29 - src.core.orchestrator - ERROR - Task execution failed: 4b7ce85a-7c99-4544-85d8-8835c970daf6, error: [TASK_EXECUTION_ERROR] Policy violation: No matching policy rule found, default deny
+2025-08-30 21:45:29 - src.core.orchestrator - ERROR - Task execution failed: 0f9f885e-06ce-45bf-b0b3-c93175786bae, error: [TASK_EXECUTION_ERROR] Policy violation: No matching policy rule found, default deny
+2025-08-30 21:45:29 - src.core.orchestrator - ERROR - Task execution failed: c9e53465-26e6-4eb8-9ce1-90474f0a83b5, error: [TASK_EXECUTION_ERROR] Policy violation: No matching policy rule found, default deny
+2025-08-30 21:45:29 - src.core.orchestrator - ERROR - Task execution failed: 559dc361-e4ca-4d65-a51b-71ad99aa79f8, error: [TASK_EXECUTION_ERROR] Policy violation: No matching policy rule found, default deny
+2025-08-30 21:45:29 - src.core.orchestrator - ERROR - Task execution failed: 73e07015-cc32-411c-95ab-e9c6eded8b69, error: [TASK_EXECUTION_ERROR] Policy violation: No matching policy rule found, default deny
+2025-08-30 21:45:29 - src.core.orchestrator - ERROR - Task execution failed: 24971c40-c033-4e90-900a-cf2b13c6026f, error: [TASK_EXECUTION_ERROR] Policy violation: No matching policy rule found, default deny
+2025-08-30 21:45:29 - src.core.orchestrator - ERROR - Task execution failed: b2aaac42-cf6b-4ed6-bcdf-6e8cd065534b, error: [TASK_EXECUTION_ERROR] Policy violation: No matching policy rule found, default deny
+2025-08-30 21:45:29 - src.core.orchestrator - ERROR - Task execution failed: eae4f865-2842-4dd3-964a-ccc01a0951d1, error: [TASK_EXECUTION_ERROR] Policy violation: No matching policy rule found, default deny
+2025-08-30 21:45:29 - src.core.orchestrator - ERROR - Task execution failed: 728bb583-6f3d-4f45-9506-ec756b4c8ae3, error: [TASK_EXECUTION_ERROR] Policy violation: No matching policy rule found, default deny
+2025-08-30 21:45:29 - src.core.orchestrator - ERROR - Task execution failed: fa0d4a3b-d8e0-4d43-8109-b754927b8833, error: [TASK_EXECUTION_ERROR] Policy violation: No matching policy rule found, default deny
+2025-08-30 21:45:29 - src.core.orchestrator - ERROR - Task execution failed: cc2d1548-aa60-427b-9e0a-654d69a78c29, error: [TASK_EXECUTION_ERROR] Policy violation: No matching policy rule found, default deny
+2025-08-30 21:47:05 - src.core.orchestrator - ERROR - Task execution failed: b648ed92-7aff-4476-8874-2e3bb764a699, error: [TASK_EXECUTION_ERROR] Policy violation: No matching policy rule found, default deny
+2025-08-30 21:47:37 - src.core.orchestrator - ERROR - Task execution failed: b1abcf36-abbc-4505-8c42-ef6f1266d4ad, error: 'ParsedCommand' object has no attribute 'get'
+2025-08-30 21:49:05 - src.core.orchestrator - ERROR - Task execution failed: 240abd21-3dd6-4b6c-a057-b8513cb307f7, error: 'IntentType' object has no attribute 'lower'
+2025-08-30 21:50:07 - src.core.orchestrator - ERROR - Task execution failed: 363c61c2-c5c5-4703-b629-c214072fbb78, error: 'SkillLibrary' object has no attribute 'find_matching_skill'
+2025-08-30 21:50:57 - src.core.orchestrator - ERROR - Task execution failed: af122b1d-0d11-466f-875e-2dc857bed4bd, error: 'SiteExplorer' object has no attribute 'explore_and_model'
+2025-08-30 21:52:12 - src.core.orchestrator - ERROR - Task execution failed: 80692ee0-693e-4cbb-9a37-dadbb8637c03, error: 'SiteModel' object has no attribute 'get'
+2025-08-30 21:52:47 - src.core.orchestrator - ERROR - Task execution failed: 1a62670d-3acf-4d2f-bce0-09b86f4524e5, error: 'ActionGraphEngine' object has no attribute 'execute'
+2025-08-30 21:54:01 - src.core.orchestrator - ERROR - Task execution failed: 3dfd9091-cc8e-4773-af7e-2709061f3511, error: 'dict' object has no attribute 'nodes'
+2025-08-30 21:57:19 - src.core.orchestrator - ERROR - Task execution failed: c0e11c94-823a-40fb-8eff-01b58b1d41ef, error: [TASK_EXECUTION_ERROR] Policy violation: No matching policy rule found, default deny
+2025-08-30 21:57:20 - src.core.orchestrator - ERROR - Task execution failed: f89309f8-f358-4406-b5b6-05ad1c98f967, error: [TASK_EXECUTION_ERROR] Policy violation: No matching policy rule found, default deny
+2025-08-30 21:57:20 - src.core.orchestrator - ERROR - Task execution failed: 1194d025-afbd-44f3-9662-0b5f0dc7900b, error: [TASK_EXECUTION_ERROR] Policy violation: No matching policy rule found, default deny
+2025-08-30 21:57:20 - src.core.orchestrator - ERROR - Task execution failed: 4231d957-bdb3-4ec9-ba7a-bb4bf19c2b7c, error: [TASK_EXECUTION_ERROR] Policy violation: No matching policy rule found, default deny
+2025-08-30 21:57:20 - src.core.orchestrator - ERROR - Task execution failed: f5254a93-ea89-49b5-8073-90fd21ad9e22, error: [TASK_EXECUTION_ERROR] Policy violation: No matching policy rule found, default deny
+2025-08-30 21:57:20 - src.core.orchestrator - ERROR - Task execution failed: e77a9659-5c96-4994-8bf2-3a00e1752e1a, error: [TASK_EXECUTION_ERROR] Policy violation: No matching policy rule found, default deny
+2025-08-30 21:57:20 - src.core.orchestrator - ERROR - Task execution failed: 36d3b932-5d6d-4a5e-ba71-459b272f7487, error: [TASK_EXECUTION_ERROR] Policy violation: No matching policy rule found, default deny
+2025-08-30 21:57:20 - src.core.orchestrator - ERROR - Task execution failed: f650269e-c31a-46a6-97c8-d630bc8be6fa, error: [TASK_EXECUTION_ERROR] Policy violation: No matching policy rule found, default deny
+2025-08-30 21:57:20 - src.core.orchestrator - ERROR - Task execution failed: c32718df-8325-4703-9b29-7a03e6957ac4, error: [TASK_EXECUTION_ERROR] Policy violation: No matching policy rule found, default deny
+2025-08-30 21:57:20 - src.core.orchestrator - ERROR - Task execution failed: c1e4724d-2afd-48c4-b49f-f3aca8c541aa, error: [TASK_EXECUTION_ERROR] Policy violation: No matching policy rule found, default deny
+2025-08-30 21:57:20 - src.core.orchestrator - ERROR - Task execution failed: 8674e7fb-b47f-4df7-97e2-c81327dbe7ff, error: [TASK_EXECUTION_ERROR] Policy violation: No matching policy rule found, default deny
+2025-08-30 21:57:20 - src.core.orchestrator - ERROR - Task execution failed: b2cb5ece-9598-4ad9-822c-400dafbef81f, error: [TASK_EXECUTION_ERROR] Policy violation: No matching policy rule found, default deny

@@ -1,0 +1,217 @@
+# Aura日志配置文件
+# 使用Python logging.dictConfig格式
+
+version: 1
+disable_existing_loggers: false
+
+# 格式化器
+formatters:
+  standard:
+    format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    datefmt: "%Y-%m-%d %H:%M:%S"
+  
+  detailed:
+    format: "%(asctime)s - %(name)s - %(levelname)s - %(module)s - %(funcName)s:%(lineno)d - %(message)s"
+    datefmt: "%Y-%m-%d %H:%M:%S"
+  
+  json:
+    format: "%(asctime)s"
+    class: "pythonjsonlogger.jsonlogger.JsonFormatter"
+    datefmt: "%Y-%m-%dT%H:%M:%S"
+    
+  console:
+    format: "%(asctime)s | %(levelname)-8s | %(name)-20s | %(message)s"
+    datefmt: "%H:%M:%S"
+
+# 处理器
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: DEBUG
+    formatter: console
+    stream: ext://sys.stdout
+  
+  file_app:
+    class: logging.handlers.RotatingFileHandler
+    level: INFO
+    formatter: standard
+    filename: logs/aura.log
+    maxBytes: 10485760  # 10MB
+    backupCount: 5
+    encoding: utf-8
+  
+  file_error:
+    class: logging.handlers.RotatingFileHandler
+    level: ERROR
+    formatter: detailed
+    filename: logs/error.log
+    maxBytes: 10485760  # 10MB
+    backupCount: 10
+    encoding: utf-8
+  
+  file_audit:
+    class: logging.handlers.RotatingFileHandler
+    level: INFO
+    formatter: json
+    filename: logs/audit.log
+    maxBytes: 52428800  # 50MB
+    backupCount: 20
+    encoding: utf-8
+  
+  file_performance:
+    class: logging.handlers.RotatingFileHandler
+    level: INFO
+    formatter: json
+    filename: logs/performance.log
+    maxBytes: 20971520  # 20MB
+    backupCount: 10
+    encoding: utf-8
+  
+  file_execution:
+    class: logging.handlers.RotatingFileHandler
+    level: DEBUG
+    formatter: detailed
+    filename: logs/execution.log
+    maxBytes: 104857600  # 100MB
+    backupCount: 5
+    encoding: utf-8
+
+# 记录器
+loggers:
+  # 根记录器
+  root:
+    level: INFO
+    handlers: [console, file_app, file_error]
+    propagate: false
+  
+  # Aura核心模块
+  aura:
+    level: INFO
+    handlers: [console, file_app, file_error]
+    propagate: false
+  
+  aura.core:
+    level: DEBUG
+    handlers: [console, file_app, file_error]
+    propagate: false
+  
+  aura.core.orchestrator:
+    level: INFO
+    handlers: [console, file_app, file_execution]
+    propagate: false
+  
+  aura.core.action_graph:
+    level: DEBUG
+    handlers: [console, file_execution]
+    propagate: false
+  
+  aura.core.policy_engine:
+    level: INFO
+    handlers: [console, file_app, file_audit]
+    propagate: false
+  
+  aura.core.risk_engine:
+    level: INFO
+    handlers: [console, file_app, file_audit]
+    propagate: false
+  
+  # Aura模块
+  aura.modules:
+    level: INFO
+    handlers: [console, file_app]
+    propagate: false
+  
+  aura.modules.site_explorer:
+    level: INFO
+    handlers: [console, file_app, file_execution]
+    propagate: false
+  
+  aura.modules.skill_library:
+    level: INFO
+    handlers: [console, file_app, file_audit]
+    propagate: false
+  
+  aura.modules.command_parser:
+    level: DEBUG
+    handlers: [console, file_app]
+    propagate: false
+  
+  # API相关
+  aura.api:
+    level: INFO
+    handlers: [console, file_app]
+    propagate: false
+  
+  uvicorn:
+    level: INFO
+    handlers: [console, file_app]
+    propagate: false
+  
+  uvicorn.access:
+    level: INFO
+    handlers: [file_app]
+    propagate: false
+  
+  # 第三方库
+  playwright:
+    level: WARNING
+    handlers: [file_app]
+    propagate: false
+  
+  httpx:
+    level: WARNING
+    handlers: [file_app]
+    propagate: false
+  
+  openai:
+    level: INFO
+    handlers: [file_app]
+    propagate: false
+  
+  sqlalchemy:
+    level: WARNING
+    handlers: [file_app]
+    propagate: false
+  
+  sqlalchemy.engine:
+    level: INFO
+    handlers: [file_app]
+    propagate: false
+  
+  redis:
+    level: WARNING
+    handlers: [file_app]
+    propagate: false
+  
+  # 审计日志
+  audit:
+    level: INFO
+    handlers: [file_audit]
+    propagate: false
+    qualname: audit
+  
+  # 性能日志
+  performance:
+    level: INFO
+    handlers: [file_performance]
+    propagate: false
+    qualname: performance
+  
+  # 安全日志
+  security:
+    level: INFO
+    handlers: [console, file_app, file_audit]
+    propagate: false
+    qualname: security
+
+# 过滤器（可选）
+filters:
+  sensitive_filter:
+    class: aura.utils.logger.SensitiveDataFilter
+    sensitive_fields:
+      - password
+      - token
+      - api_key
+      - secret
+      - credit_card
+      - ssn

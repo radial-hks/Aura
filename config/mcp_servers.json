@@ -1,0 +1,82 @@
+{
+  "version": "1.0",
+  "servers": {
+    "playwright": {
+      "type": "playwright",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@playwright/mcp"
+      ],
+      "env": {},
+      "enabled": true,
+      "timeout": 30,
+      "retry_count": 3,
+      "description": "Playwright MCP server for browser automation"
+    },
+    "playwright_extension": {
+      "type": "playwright",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@playwright/mcp",
+        "--extension"
+      ],
+      "env": {},
+      "enabled": false,
+      "timeout": 30,
+      "retry_count": 3,
+      "description": "Playwright MCP server with browser extension support"
+    },
+    "filesystem": {
+      "type": "filesystem",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "E:\\Code\\PythonDir\\Agents\\Aura"
+      ],
+      "env": {},
+      "enabled": false,
+      "timeout": 30,
+      "retry_count": 3,
+      "description": "Filesystem MCP server for file operations"
+    },
+    "brave_search": {
+      "type": "search",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-brave-search"
+      ],
+      "env": {
+        "BRAVE_API_KEY": "your-brave-api-key-here"
+      },
+      "enabled": false,
+      "timeout": 30,
+      "retry_count": 3,
+      "description": "Brave Search MCP server for web search"
+    },
+    "memory": {
+      "type": "custom",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-memory"
+      ],
+      "env": {},
+      "enabled": false,
+      "timeout": 30,
+      "retry_count": 3,
+      "description": "Memory MCP server for persistent storage"
+    }
+  },
+  "global_settings": {
+    "auto_reconnect": true,
+    "max_reconnect_attempts": 5,
+    "reconnect_delay": 2,
+    "log_level": "INFO",
+    "concurrent_connections": 5,
+    "health_check_interval": 60
+  }
+}
