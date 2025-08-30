@@ -1,4 +1,50 @@
-"""Enhanced error handling and recovery mechanisms for MCP connections."""
+"""Enhanced error handling and recovery mechanisms for MCP connections.
+
+This module provides comprehensive error handling, recovery mechanisms, and resilience patterns
+for MCP (Model Context Protocol) connections. It implements industry-standard patterns like
+circuit breakers, exponential backoff, connection pooling, and detailed error classification
+to ensure robust and reliable MCP server interactions.
+
+Core Components:
+    - ErrorMetrics: Tracks error statistics and success rates
+    - CircuitBreaker: Prevents cascading failures with automatic recovery
+    - ExponentialBackoff: Implements intelligent retry strategies with jitter
+    - ConnectionPool: Manages multiple MCP connections with health monitoring
+    - MCPErrorHandler: Orchestrates error handling with fallback mechanisms
+
+Key Features:
+    - Automatic error classification and categorization
+    - Circuit breaker pattern for fault tolerance
+    - Exponential backoff with jitter for retry logic
+    - Connection health monitoring and metrics
+    - Graceful degradation with fallback operations
+    - Comprehensive error reporting and diagnostics
+
+Usage Example:
+    ```python
+    # Initialize error handling system
+    pool = ConnectionPool(max_connections=10)
+    handler = MCPErrorHandler(pool)
+    
+    # Add connections to pool
+    pool.add_connection("server1", connection1)
+    pool.add_connection("server2", connection2)
+    
+    # Execute operations with error handling
+    result = await handler.execute_with_error_handling(
+        "server1",
+        lambda: server1.execute_command("test"),
+        fallback=lambda: server2.execute_command("test")
+    )
+    ```
+
+Architectural Considerations:
+    - Designed for high-availability MCP deployments
+    - Supports both synchronous and asynchronous operations
+    - Provides detailed metrics for monitoring and alerting
+    - Implements graceful degradation strategies
+    - Optimized for minimal performance overhead
+"""
 
 import asyncio
 import logging
@@ -70,18 +116,69 @@ class CircuitBreakerConfig:
     
 
 class CircuitBreaker:
-    """断路器模式实现"""
+    """Circuit breaker pattern implementation for fault tolerance.
+    
+    The circuit breaker prevents cascading failures by monitoring operation success/failure
+    rates and automatically opening the circuit when failure thresholds are exceeded.
+    It provides three states: CLOSED (normal), OPEN (failing), and HALF_OPEN (testing recovery).
+    
+    States:
+        - CLOSED: Normal operation, requests pass through
+        - OPEN: Circuit is open, requests are rejected immediately
+        - HALF_OPEN: Testing recovery, limited requests allowed
+    
+    Args:
+        config (CircuitBreakerConfig): Configuration for failure thresholds and recovery
+    
+    Attributes:
+        config: Circuit breaker configuration
+        state: Current circuit state
+        failure_count: Number of consecutive failures
+        last_failure_time: Timestamp of last failure
+        half_open_calls: Number of calls made in half-open state
+    
+    Example:
+        ```python
+        config = CircuitBreakerConfig(failure_threshold=5, recovery_timeout=60)
+        breaker = CircuitBreaker(config)
+        
+        if breaker.can_execute():
+            try:
+                result = await operation()
+                breaker.record_success()
+            except Exception:
+                breaker.record_failure()
+        ```
+    """
     
     def __init__(self, config: CircuitBreakerConfig):
+        """Initialize circuit breaker with configuration.
+        
+        Args:
+            config (CircuitBreakerConfig): Circuit breaker configuration parameters
+        """
         self.config = config
-        self.state = ConnectionState.CONNECTED
+        self.state = ConnectionState.CONNECTED  # Start in closed state
         self.failure_count = 0
         self.last_failure_time = 0
         self.half_open_calls = 0
         self.logger = logging.getLogger(f"{__name__}.CircuitBreaker")
         
     def can_execute(self) -> bool:
-        """检查是否可以执行操作"""
+        """Check if operation can be executed based on circuit state.
+        
+        Determines whether requests should be allowed through based on the current
+        circuit state and recovery logic. Automatically transitions from OPEN to
+        HALF_OPEN state when recovery timeout has elapsed.
+        
+        Returns:
+            bool: True if operation can proceed, False if circuit is open
+            
+        State Transitions:
+            - CONNECTED: Always allows execution
+            - CIRCUIT_OPEN: Allows execution only after recovery timeout
+            - RECONNECTING (half-open): Allows limited executions for testing
+        """
         if self.state == ConnectionState.CONNECTED:
             return True
         elif self.state == ConnectionState.CIRCUIT_OPEN:
@@ -131,9 +228,40 @@ class RetryConfig:
     
 
 class ExponentialBackoff:
-    """指数退避重试机制"""
+    """Exponential backoff retry mechanism with jitter.
+    
+    Implements intelligent retry logic with exponential backoff and optional jitter
+    to prevent thundering herd problems. Supports configurable retry attempts,
+    delay bounds, and error classification for retry decisions.
+    
+    Features:
+        - Exponential delay calculation with configurable base and multiplier
+        - Random jitter to prevent synchronized retries
+        - Maximum delay cap to prevent excessive wait times
+        - Error classification for retry eligibility
+        - Comprehensive retry statistics and logging
+    
+    Args:
+        config (RetryConfig): Retry configuration parameters
+    
+    Example:
+        ```python
+        config = RetryConfig(max_attempts=5, base_delay=1.0, max_delay=60.0)
+        backoff = ExponentialBackoff(config)
+        
+        result = await backoff.execute_with_retry(
+            lambda: risky_operation(),
+            error_classifier=classify_error
+        )
+        ```
+    """
     
     def __init__(self, config: RetryConfig):
+        """Initialize exponential backoff with retry configuration.
+        
+        Args:
+            config (RetryConfig): Configuration for retry behavior
+        """
         self.config = config
         
     def calculate_delay(self, attempt: int) -> float:
@@ -184,13 +312,51 @@ class ExponentialBackoff:
 
 
 class ConnectionPool:
-    """连接池管理"""
+    """Connection pool manager for MCP server connections.
+    
+    Manages a pool of MCP connections with health monitoring, error tracking,
+    and circuit breaker integration. Provides centralized connection lifecycle
+    management and comprehensive health metrics.
+    
+    Features:
+        - Dynamic connection addition and removal
+        - Per-connection health monitoring and metrics
+        - Integrated circuit breaker for each connection
+        - Connection health assessment and filtering
+        - Detailed statistics and error reporting
+    
+    Args:
+        max_connections (int): Maximum number of connections in the pool
+    
+    Attributes:
+        max_connections: Maximum allowed connections
+        active_connections: Dictionary of active connection objects
+        connection_metrics: Per-connection error and success metrics
+        circuit_breakers: Per-connection circuit breaker instances
+    
+    Example:
+        ```python
+        pool = ConnectionPool(max_connections=10)
+        pool.add_connection("server1", connection1)
+        
+        # Get healthy connections only
+        healthy = pool.get_healthy_connections()
+        
+        # Record operation results
+        pool.record_operation_result("server1", success=True)
+        ```
+    """
     
     def __init__(self, max_connections: int = 10):
+        """Initialize connection pool with maximum connection limit.
+        
+        Args:
+            max_connections (int): Maximum number of connections allowed in pool
+        """
         self.max_connections = max_connections
-        self.active_connections: Dict[str, Any] = {}
-        self.connection_metrics: Dict[str, ErrorMetrics] = {}
-        self.circuit_breakers: Dict[str, CircuitBreaker] = {}
+        self.active_connections: Dict[str, Any] = {}  # Connection name -> connection object
+        self.connection_metrics: Dict[str, ErrorMetrics] = {}  # Per-connection metrics
+        self.circuit_breakers: Dict[str, CircuitBreaker] = {}  # Per-connection circuit breakers
         self.logger = logging.getLogger(f"{__name__}.ConnectionPool")
         
     def add_connection(self, name: str, connection: Any) -> None:
@@ -261,15 +427,89 @@ class ConnectionPool:
 
 
 class MCPErrorHandler:
-    """MCP 错误处理器"""
+    """Comprehensive MCP error handler with retry and fallback mechanisms.
+    
+    Orchestrates error handling for MCP operations by combining circuit breakers,
+    exponential backoff retries, error classification, and fallback strategies.
+    Provides a unified interface for robust MCP operation execution.
+    
+    Core Responsibilities:
+        - Execute operations with automatic retry logic
+        - Classify errors for appropriate handling strategies
+        - Manage circuit breaker states and health checks
+        - Implement fallback mechanisms for degraded operations
+        - Provide comprehensive error reporting and metrics
+    
+    Features:
+        - Intelligent error classification and categorization
+        - Automatic retry with exponential backoff
+        - Circuit breaker integration for fault tolerance
+        - Fallback operation support for graceful degradation
+        - Detailed error statistics and health metrics
+    
+    Args:
+        connection_pool (ConnectionPool): Pool of MCP connections to manage
+    
+    Example:
+        ```python
+        pool = ConnectionPool()
+        handler = MCPErrorHandler(pool)
+        
+        # Execute with error handling and fallback
+        result = await handler.execute_with_error_handling(
+            "primary_server",
+            lambda: primary_operation(),
+            fallback=lambda: backup_operation()
+        )
+        
+        # Get comprehensive error summary
+        summary = handler.get_error_summary()
+        ```
+    
+    Error Handling Flow:
+        1. Check circuit breaker state for connection
+        2. Execute operation with exponential backoff retry
+        3. Classify any errors that occur
+        4. Update connection metrics and circuit breaker
+        5. Attempt fallback operation if primary fails
+        6. Log comprehensive error information
+    """
     
     def __init__(self, connection_pool: ConnectionPool):
+        """Initialize error handler with connection pool.
+        
+        Args:
+            connection_pool (ConnectionPool): Pool of connections to manage
+        """
         self.connection_pool = connection_pool
-        self.retry_handler = ExponentialBackoff(RetryConfig())
+        self.retry_handler = ExponentialBackoff(RetryConfig())  # Default retry configuration
         self.logger = logging.getLogger(__name__)
         
     def classify_error(self, error: Exception) -> ErrorType:
-        """分类错误类型"""
+        """Classify error into predefined error types for appropriate handling.
+        
+        Analyzes exception messages and types to categorize errors into specific
+        types that can be handled with different strategies. This classification
+        drives retry decisions and error reporting.
+        
+        Args:
+            error (Exception): The exception to classify
+            
+        Returns:
+            ErrorType: Classified error type for handling strategy
+            
+        Error Classifications:
+            - CONNECTION_TIMEOUT: Network timeouts and connection delays
+            - NETWORK_ERROR: General network connectivity issues
+            - AUTHENTICATION_ERROR: Authentication and authorization failures
+            - PROTOCOL_ERROR: MCP protocol violations and invalid requests
+            - RESOURCE_EXHAUSTED: Resource limits and capacity issues
+            - UNKNOWN_ERROR: Unclassified or unexpected errors
+            
+        Note:
+            Authentication errors are typically not retried as they indicate
+            configuration issues rather than transient failures.
+        """
         error_str = str(error).lower()
         
         if "timeout" in error_str or "timed out" in error_str:
@@ -291,7 +531,37 @@ class MCPErrorHandler:
         operation: Callable[[], Awaitable[Any]],
         fallback: Optional[Callable[[], Awaitable[Any]]] = None
     ) -> Any:
-        """执行带错误处理的操作"""
+        """Execute operation with comprehensive error handling and recovery.
+        
+        Orchestrates the complete error handling flow including circuit breaker
+        checks, retry logic, error classification, metrics recording, and fallback
+        execution. Provides robust operation execution with multiple recovery layers.
+        
+        Args:
+            connection_name (str): Name of the connection to use for operation
+            operation (Callable): Async operation to execute with error handling
+            fallback (Optional[Callable]): Optional fallback operation if primary fails
+            
+        Returns:
+            Any: Result of successful operation (primary or fallback)
+            
+        Raises:
+            RuntimeError: If connection is unavailable and no fallback provided
+            Exception: Original exception if both primary and fallback operations fail
+            
+        Execution Flow:
+            1. Check circuit breaker state for connection availability
+            2. Execute operation with exponential backoff retry logic
+            3. Record success metrics and update circuit breaker on success
+            4. On failure: classify error, record metrics, attempt fallback
+            5. Log comprehensive error information for debugging
+            
+        Performance Considerations:
+            - Circuit breaker prevents unnecessary retry attempts
+            - Exponential backoff reduces system load during failures
+            - Fallback operations provide graceful degradation
+            - Metrics collection has minimal performance impact
+        """
         circuit_breaker = self.connection_pool.circuit_breakers.get(connection_name)
         
         if not circuit_breaker or not circuit_breaker.can_execute():
@@ -330,7 +600,48 @@ class MCPErrorHandler:
             raise e
             
     def get_error_summary(self) -> Dict[str, Any]:
-        """获取错误摘要"""
+        """Generate comprehensive error summary and health metrics.
+        
+        Aggregates error statistics, connection health, and system-wide metrics
+        to provide a complete view of MCP error handling performance and system health.
+        
+        Returns:
+            Dict[str, Any]: Comprehensive error summary containing:
+                - total_connections: Total number of managed connections
+                - healthy_connections: Number of currently healthy connections
+                - connections: Per-connection detailed statistics
+                - overall_error_rate: System-wide error rate calculation
+                - most_common_errors: Aggregated error type frequencies
+                
+        Summary Structure:
+            ```python
+            {
+                "total_connections": 5,
+                "healthy_connections": 4,
+                "overall_error_rate": 0.05,
+                "connections": {
+                    "server1": {
+                        "state": "connected",
+                        "total_errors": 2,
+                        "success_count": 98,
+                        "error_rate": 0.02,
+                        "error_types": {"network_error": 2}
+                    }
+                },
+                "most_common_errors": {
+                    "network_error": 5,
+                    "timeout_error": 3
+                }
+            }
+            ```
+            
+        Usage Scenarios:
+            - System health monitoring and alerting
+            - Performance analysis and optimization
+            - Debugging connection issues
+            - Capacity planning and scaling decisions
+            - Error trend analysis and reporting
+        """
         stats = self.connection_pool.get_connection_stats()
         
         summary = {

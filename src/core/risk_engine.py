@@ -1,7 +1,39 @@
-"""Risk Engine - 风险评估引擎
+"""风险评估引擎模块 - Risk Assessment Engine
 
-负责分析和评估操作的风险级别，为策略引擎提供决策依据。
-基于多维度因素进行风险评估。
+本模块是Aura系统的风险评估核心，负责分析和评估自动化操作的风险级别，
+为策略引擎提供科学的决策依据。通过多维度风险因子分析，确保系统安全。
+
+核心职责：
+1. 多维度风险评估：URL安全性、操作类型、数据敏感性、用户行为分析
+2. 风险因子管理：定义、加载和维护各类风险评估因子
+3. 动态风险计算：基于实时上下文计算综合风险分数
+4. 风险级别分类：将风险分数映射为可理解的风险级别
+5. 安全建议生成：根据风险评估结果提供缓解措施建议
+
+架构设计：
+- 基于因子权重的风险评估模型
+- 可配置的风险阈值和分类规则
+- 支持黑名单、敏感数据模式等安全策略
+- 异步评估设计，支持复杂风险分析
+
+风险评估维度：
+1. URL和域名风险：黑名单检查、外部域名识别、敏感路径检测
+2. 操作类型风险：高危操作识别、批量操作检测
+3. 数据敏感性风险：个人信息、金融数据、敏感模式检测
+4. 用户行为风险：异常时间、操作复杂度、历史行为分析
+
+使用示例：
+    engine = RiskEngine()
+    assessment = await engine.assess_risk(parsed_command)
+    if assessment.level == RiskLevel.HIGH:
+        # 执行高风险操作处理逻辑
+        pass
+
+扩展性考虑：
+- 支持自定义风险因子和权重配置
+- 支持机器学习模型集成进行智能风险预测
+- 支持与外部威胁情报系统集成
+- 支持风险评估历史数据分析和优化
 """
 
 from typing import Dict, List, Any, Optional
@@ -54,23 +86,76 @@ class RiskAssessment:
 
 
 class RiskEngine:
-    """风险评估引擎
+    """风险评估引擎 - 多维度安全风险分析系统
     
-    实现多维度风险评估：
-    1. 基于URL和域名的风险评估
-    2. 基于操作类型的风险评估
-    3. 基于数据敏感性的风险评估
-    4. 基于用户行为的风险评估
+    实现基于多个维度的综合风险评估，为自动化操作提供安全保障。
+    采用加权因子模型，结合静态规则和动态分析，确保风险评估的准确性。
+    
+    评估维度详解：
+    1. URL和域名风险评估：
+       - 域名黑名单检查：识别已知恶意域名
+       - 外部域名风险：评估跨域操作风险
+       - 敏感路径检测：识别管理、支付等敏感页面
+    
+    2. 操作类型风险评估：
+       - 高风险操作：删除、支付、转账等不可逆操作
+       - 批量操作：大规模数据处理的风险评估
+       - 操作复杂度：复杂指令的潜在风险
+    
+    3. 数据敏感性风险评估：
+       - 个人信息检测：姓名、邮箱、电话等隐私数据
+       - 金融数据识别：信用卡号、银行账户等财务信息
+       - 敏感模式匹配：基于正则表达式的模式识别
+    
+    4. 用户行为风险评估：
+       - 时间异常检测：非工作时间操作风险
+       - 行为模式分析：基于历史行为的异常检测
+       - 操作频率监控：异常高频操作识别
+    
+    风险分数计算：
+    - 采用0.0-1.0的归一化分数
+    - 基于加权因子累加计算
+    - 支持动态阈值调整
+    
+    风险级别映射：
+    - CRITICAL (0.8+): 严重风险，建议禁止操作
+    - HIGH (0.6-0.8): 高风险，需要审批
+    - MEDIUM (0.3-0.6): 中等风险，需要监控
+    - LOW (0.0-0.3): 低风险，正常执行
     """
     
     def __init__(self):
+        """初始化风险评估引擎
+        
+        设置风险评估所需的各种数据结构和配置，包括风险因子、
+        安全策略数据等。自动加载预定义的风险规则和安全数据。
+        
+        初始化组件：
+        - 风险因子列表：存储各类风险评估因子及其权重
+        - 域名黑名单：已知恶意或高风险域名列表
+        - 敏感数据模式：用于检测敏感信息的正则表达式
+        
+        设计考虑：
+        - 支持运行时动态添加和修改风险因子
+        - 黑名单支持热更新，无需重启系统
+        - 敏感模式支持多语言和多格式检测
+        """
+        # 风险因子存储 - 包含各维度的风险评估规则
         self.risk_factors: List[RiskFactor] = []
+        
+        # 域名安全策略 - 黑名单和白名单管理
         self.domain_blacklist: List[str] = []
+        
+        # 敏感数据检测 - 正则表达式模式库
         self.sensitive_patterns: List[str] = []
+        
+        # 加载预定义的风险评估规则
         self._load_risk_factors()
+        
+        # 加载安全策略数据
         self._load_security_data()
         
-        logger.info("RiskEngine initialized")
+        logger.info("RiskEngine initialized with comprehensive risk assessment capabilities")
     
     def _load_risk_factors(self):
         """加载风险因子"""
@@ -175,14 +260,45 @@ class RiskEngine:
     
     async def assess_risk(self, parsed_command: Dict[str, Any], 
                          base_risk_level: RiskLevel = RiskLevel.LOW) -> RiskAssessment:
-        """评估风险
+        """执行综合风险评估 - 系统安全决策的核心方法
+        
+        基于多维度风险因子对解析后的命令进行全面的安全风险评估，
+        生成包含风险级别、分数、触发因子和缓解建议的完整评估报告。
         
         Args:
-            parsed_command: 解析后的命令
-            base_risk_level: 基础风险级别
+            parsed_command: 解析后的命令对象，包含：
+                - primary_intent: 主要操作意图
+                - context: 操作上下文（URL、参数等）
+                - parameters: 命令参数和数据
+            base_risk_level: 基础风险级别，用于风险评估的起始点
+                - 默认为LOW，可根据用户权限或环境调整
             
         Returns:
-            风险评估结果
+            RiskAssessment: 综合风险评估结果，包含：
+                - level: 风险级别（LOW/MEDIUM/HIGH/CRITICAL）
+                - score: 归一化风险分数（0.0-1.0）
+                - factors: 触发的风险因子详细列表
+                - recommendations: 风险缓解建议措施
+                - requires_monitoring: 是否需要增强监控
+                - requires_approval: 是否需要人工审批
+        
+        评估流程：
+        1. URL和域名安全性分析
+        2. 操作类型风险评估
+        3. 数据敏感性检测
+        4. 用户行为异常分析
+        5. 综合风险分数计算和级别映射
+        6. 生成针对性的安全建议
+        
+        性能优化：
+        - 异步并发执行各维度评估
+        - 短路评估，高风险因子优先
+        - 缓存常用评估结果
+        
+        扩展性：
+        - 支持插件式风险评估模块
+        - 支持机器学习模型集成
+        - 支持外部威胁情报接入
         """
         logger.debug(f"Assessing risk for command: {getattr(parsed_command.primary_intent, 'intent', 'unknown').value if hasattr(parsed_command, 'primary_intent') and parsed_command.primary_intent and hasattr(getattr(parsed_command.primary_intent, 'intent', ''), 'value') else 'unknown'}")
         
@@ -495,10 +611,34 @@ class RiskEngine:
         return False
     
     def get_risk_stats(self) -> Dict[str, Any]:
-        """获取风险统计信息
+        """获取风险引擎统计信息 - 用于监控和运维分析
+        
+        提供风险评估引擎的配置状态和运行统计，帮助管理员了解
+        当前的风险评估能力和安全策略配置情况。
         
         Returns:
-            统计信息
+            Dict[str, Any]: 包含以下统计信息的字典：
+                - total_risk_factors: 风险因子总数
+                - risk_categories: 按风险类别分组的因子数量统计
+                    - data_privacy: 数据隐私类风险因子数量
+                    - financial: 金融类风险因子数量
+                    - security: 安全类风险因子数量
+                    - compliance: 合规类风险因子数量
+                    - operational: 操作类风险因子数量
+                - blacklisted_domains: 黑名单域名数量
+                - sensitive_patterns: 敏感数据检测模式数量
+        
+        使用场景：
+        - 安全监控面板展示风险评估能力
+        - 风险评估配置完整性检查
+        - 安全策略优化分析
+        - 系统安全状态报告生成
+        
+        扩展建议：
+        - 添加风险评估执行统计（评估次数、平均耗时等）
+        - 添加风险级别分布统计
+        - 添加最常触发的风险因子排行
+        - 添加风险评估准确性指标
         """
         return {
             "total_risk_factors": len(self.risk_factors),

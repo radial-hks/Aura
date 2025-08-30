@@ -1,7 +1,32 @@
-"""Policy Engine - 策略引擎
+"""策略引擎模块 - Policy Engine
 
-负责系统的安全策略检查、权限控制和合规性验证。
-确保所有操作符合安全规范和用户权限。
+本模块是Aura系统的安全控制核心，负责管理和执行安全策略，确保所有自动化操作
+都在安全可控的范围内进行。
+
+核心职责：
+1. 策略规则管理：定义、存储和维护各种安全策略规则
+2. 权限控制：基于用户身份和操作类型进行权限验证
+3. 风险评估集成：结合风险引擎的评估结果做出策略决策
+4. 审批流程：对高风险操作启动人工审批机制
+5. 多因子认证：对敏感操作要求额外的身份验证
+
+架构设计：
+- 基于规则的策略引擎，支持优先级和条件匹配
+- 可扩展的策略动作类型（允许、拒绝、需要审批、需要MFA）
+- 灵活的条件匹配系统（URL模式、域名、操作类型、风险级别等）
+- 用户权限分级管理
+
+使用示例：
+    engine = PolicyEngine()
+    result = await engine.check_policy(parsed_command, risk_assessment)
+    if result.approval_required:
+        approved = await engine.request_approval(task_id, result.reason)
+
+注意事项：
+- 默认采用拒绝策略，只有明确允许的操作才会被执行
+- 策略规则按优先级排序，优先级低的规则优先匹配
+- 支持动态添加、删除和更新策略规则
+- 审批流程需要与外部系统集成（如企业IM、邮件等）
 """
 
 from typing import Dict, List, Any, Optional
@@ -65,8 +90,28 @@ class PolicyEngine:
     """
     
     def __init__(self):
+        """初始化策略引擎
+        
+        创建策略引擎实例，初始化规则存储和用户权限管理系统。
+        自动加载默认的安全策略规则。
+        
+        初始化内容：
+        - 策略规则列表：存储所有策略规则
+        - 用户权限映射：管理用户ID到权限级别的映射
+        - 默认规则加载：加载系统预定义的安全策略
+        
+        设计考虑：
+        - 规则列表支持动态修改，便于运行时策略调整
+        - 用户权限采用字典存储，支持快速查找
+        - 默认规则确保系统启动后即具备基本安全保护
+        """
+        # 策略规则存储 - 按优先级排序执行
         self.rules: List[PolicyRule] = []
+        
+        # 用户权限管理 - 用户ID到权限级别的映射
         self.user_permissions: Dict[str, List[PermissionLevel]] = {}
+        
+        # 加载系统默认安全策略
         self._load_default_rules()
         
         logger.info("PolicyEngine initialized")
@@ -124,14 +169,40 @@ class PolicyEngine:
     
     async def check_policy(self, parsed_command: Dict[str, Any], 
                           risk_assessment: Dict[str, Any]) -> PolicyCheckResult:
-        """检查策略
+        """执行策略检查 - 系统安全控制的核心方法
+        
+        根据解析后的命令和风险评估结果，遍历所有启用的策略规则，
+        找到第一个匹配的规则并返回相应的策略决策。
         
         Args:
-            parsed_command: 解析后的命令
-            risk_assessment: 风险评估结果
+            parsed_command: 解析后的命令对象，包含：
+                - primary_intent: 主要意图（如导航、点击、输入等）
+                - context: 上下文信息（目标URL、域名、元素类型等）
+                - parameters: 命令参数
+            risk_assessment: 风险引擎的评估结果，包含：
+                - level: 风险级别（low/medium/high/critical）
+                - factors: 风险因子列表
+                - score: 风险评分
+                - recommendations: 建议措施
             
         Returns:
-            策略检查结果
+            PolicyCheckResult: 策略检查结果，包含：
+                - allowed: 是否允许执行
+                - action: 策略动作（允许/拒绝/需要审批/需要MFA）
+                - reason: 决策原因
+                - approval_required: 是否需要人工审批
+                - mfa_required: 是否需要多因子认证
+        
+        执行流程：
+        1. 按优先级排序所有启用的策略规则
+        2. 逐一检查规则条件是否匹配当前命令和风险评估
+        3. 返回第一个匹配规则的策略动作
+        4. 如无匹配规则，默认拒绝执行
+        
+        性能考虑：
+        - 规则按优先级预排序，避免每次检查时排序
+        - 短路评估，找到匹配规则即返回
+        - 异步设计，支持复杂条件的异步验证
         """
         logger.debug(f"Checking policy for command: {getattr(parsed_command.primary_intent, 'intent', 'unknown').value if hasattr(parsed_command, 'primary_intent') and parsed_command.primary_intent and hasattr(getattr(parsed_command.primary_intent, 'intent', ''), 'value') else 'unknown'}")
         
@@ -333,14 +404,34 @@ class PolicyEngine:
         return required_permission in user_perms
     
     async def request_approval(self, task_id: str, reason: str) -> bool:
-        """请求人工审批
+        """请求人工审批 - 高风险操作的安全保障机制
+        
+        当策略引擎判定某个操作需要人工审批时，通过此方法启动审批流程。
+        支持多种审批渠道和超时控制。
         
         Args:
-            task_id: 任务ID
-            reason: 审批原因
+            task_id: 任务唯一标识符，用于跟踪审批状态
+            reason: 需要审批的具体原因，向审批者说明风险点
             
         Returns:
-            是否批准
+            bool: 审批结果
+                - True: 审批通过，可以执行操作
+                - False: 审批拒绝，禁止执行操作
+        
+        实现考虑：
+        - 支持多种通知渠道（邮件、IM、短信等）
+        - 设置合理的审批超时时间
+        - 记录完整的审批日志用于审计
+        - 支持审批权限分级（不同风险级别需要不同级别审批者）
+        
+        集成要求：
+        - 需要与企业通知系统集成
+        - 需要与用户管理系统集成获取审批者信息
+        - 需要与审计系统集成记录审批历史
+        
+        当前实现：
+        - 简化版本，直接返回True用于演示
+        - 生产环境需要替换为真实的审批流程
         """
         logger.info(f"Approval requested for task {task_id}: {reason}")
         
@@ -359,10 +450,32 @@ class PolicyEngine:
         return approved
     
     def get_policy_stats(self) -> Dict[str, Any]:
-        """获取策略统计信息
+        """获取策略引擎统计信息 - 用于监控和运维
+        
+        提供策略引擎的运行状态和配置统计，帮助管理员了解
+        当前的策略配置情况和系统安全状态。
         
         Returns:
-            统计信息
+            Dict[str, Any]: 包含以下统计信息的字典：
+                - total_rules: 策略规则总数
+                - enabled_rules: 启用的策略规则数量
+                - rule_types: 按策略动作类型分组的规则数量统计
+                    - allow: 允许类规则数量
+                    - deny: 拒绝类规则数量  
+                    - require_approval: 需要审批类规则数量
+                    - require_mfa: 需要MFA类规则数量
+                - total_users: 配置权限的用户总数
+        
+        使用场景：
+        - 系统监控面板展示策略配置状态
+        - 安全审计报告生成
+        - 策略配置合理性分析
+        - 运维告警阈值设置
+        
+        扩展建议：
+        - 添加策略执行统计（通过/拒绝/审批次数）
+        - 添加性能指标（平均检查耗时等）
+        - 添加热点规则分析（最常匹配的规则）
         """
         return {
             "total_rules": len(self.rules),
